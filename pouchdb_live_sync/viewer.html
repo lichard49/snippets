@@ -1,33 +1,18 @@
 <html>
 	<head>
 		<script src="//cdn.jsdelivr.net/npm/pouchdb@7.1.1/dist/pouchdb.min.js"></script>
+		<script src="js/sync.js"></script>
 	</head>
 
 	<body>
 		<h1 id="age"></h1>
+
 		<script>
-			var localDB = new PouchDB('hi_test');
-			var remoteDB = new PouchDB('http://localhost:5984/hi_test');
-			
-			remoteDB.sync(localDB, {
-				live: true,
-				retry: true
-			}).on('change', function (change) {
-				// yo, something changed!
-				console.log('change');
-				document.getElementById('age').innerHTML = change.change.docs[0].age;
-			}).on('paused', function (info) {
-				// replication was paused, usually because of a lost connection
-				console.log('pause');
-				console.log(info);
-			}).on('active', function (info) {
-				// replication was resumed
-				console.log('resume');
-				console.log(info);
-			}).on('error', function (err) {
-				// totally unhandled error (shouldn't happen)
-				console.log('error');
-				console.log(err);
+			setupSync('hi_test', {
+				on_change: function(e) {
+					document.getElementById('age').innerHTML =
+						e.change.docs[0].age;
+				}
 			});
 		</script>
 	</body>

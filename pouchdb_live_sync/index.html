@@ -1,6 +1,7 @@
 <html>
 	<head>
 		<script src="//cdn.jsdelivr.net/npm/pouchdb@7.1.1/dist/pouchdb.min.js"></script>
+		<script src="js/sync.js"></script>
 	</head>
 
 	<body>
@@ -8,40 +9,16 @@
 		<button id="button">Click me!</button>
 
 		<script>
-			var localDB = new PouchDB('hi_test');
-			var remoteDB = new PouchDB('http://localhost:5984/hi_test');
-			
-			remoteDB.sync(localDB, {
-				live: true,
-				retry: true
-			}).on('change', function (change) {
-				// yo, something changed!
-				console.log('change');
-				console.log(change);
-			}).on('paused', function (info) {
-				// replication was paused, usually because of a lost connection
-				console.log('pause');
-				console.log(info);
-			}).on('active', function (info) {
-				// replication was resumed
-				console.log('resume');
-				console.log(info);
-			}).on('error', function (err) {
-				// totally unhandled error (shouldn't happen)
-				console.log('error');
-				console.log(err);
-			});
+			var db = setupSync('hi_test');
+			var local_db = db[0];
 
 			var button = document.getElementById('button');
 			button.onclick = function() {
-				console.log('hi!');
-
-				localDB.get('mittens').then(function (doc) {
+				local_db.get('mittens').then(function (doc) {
 					// handle doc
-					console.log(doc);
 					doc.age++;
-					console.log(doc);
-					localDB.put(doc);
+					console.log(doc.age);
+					local_db.put(doc);
 				}).catch(function (err) {
 					console.log(err);
 				});
